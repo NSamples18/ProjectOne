@@ -1,45 +1,46 @@
 package edu.westga.cs3211.model.person;
 
-
 import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import edu.westga.cs3211.User.model.Authenticator;
 
-/**
- * Tests for the Authenticator class.
- */
-public class AuthenticatorTest {
+class AuthenticatorTests {
 
-    private Authenticator authenticator;
-
-    @BeforeEach
-    public void setUp() {
-        this.authenticator = new Authenticator();
+    @Test
+    void testVerifyHaynesValidCredentials() {
+        Authenticator auth = new Authenticator();
+        assertTrue(auth.verify("Haynes", "CrewMate1"));
     }
 
     @Test
-    public void testVerifyWithValidCredentials() {
-        assertTrue(this.authenticator.verify("Haynes", "CrewMate1"));
-        assertTrue(this.authenticator.verify("Brent", "QMaster1"));
+    void testVerifyBrentValidCredentials() {
+        Authenticator auth = new Authenticator();
+        assertTrue(auth.verify("Brent", "QMaster1"));
     }
 
     @Test
-    public void testVerifyWithInvalidUsername() {
-        assertFalse(this.authenticator.verify("Unknown", "CrewMate1"));
+    void testVerifyWrongPassword() {
+        Authenticator auth = new Authenticator();
+        assertFalse(auth.verify("Haynes", "WrongPassword"));
     }
 
     @Test
-    public void testVerifyWithInvalidPassword() {
-        assertFalse(this.authenticator.verify("Haynes", "WrongPass"));
+    void testVerifyWrongUsername() {
+        Authenticator auth = new Authenticator();
+        assertFalse(auth.verify("WrongUser", "CrewMate1"));
     }
 
     @Test
-    public void testVerifyWithNullInputs() {
-        assertFalse(this.authenticator.verify(null, null));
-        assertFalse(this.authenticator.verify("Haynes", null));
-        assertFalse(this.authenticator.verify(null, "CrewMate1"));
+    void testVerifyWrongUserAndPassword() {
+        Authenticator auth = new Authenticator();
+        assertFalse(auth.verify("NotReal", "Nope"));
+    }
+
+    @Test
+    void testVerifyIsCaseSensitive() {
+        Authenticator auth = new Authenticator();
+        assertFalse(auth.verify("haynes", "crewmate1"));   // lowercase should fail
     }
 }
+

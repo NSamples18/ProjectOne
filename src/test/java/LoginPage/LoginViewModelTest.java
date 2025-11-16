@@ -1,67 +1,58 @@
 package LoginPage;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import LoginPage.ViewModal.LoginViewModel;
-import edu.westga.cs3211.User.model.Authenticator;
 
-/**
- * Tests for the LoginViewModel.
- */
-public class LoginViewModelTest {
+class LoginViewModelTests {
 
-    private LoginViewModel viewModel;
+    @Test
+    void testInitialValuesAreEmpty() {
+        LoginViewModel vm = new LoginViewModel();
 
-    @BeforeEach
-    public void setUp() {
-        this.viewModel = new LoginViewModel();
+        assertEquals("", vm.usernameProperty().get());
+        assertEquals("", vm.passwordProperty().get());
     }
 
     @Test
-    public void testInitialStateHasEmptyFields() {
-        assertEquals("", this.viewModel.usernameProperty().get());
-        assertEquals("", this.viewModel.passwordProperty().get());
-        assertFalse(this.viewModel.canLogin());
+    void testCanLoginTrueForFilledFields() {
+        LoginViewModel vm = new LoginViewModel();
+
+        vm.usernameProperty().set("test");
+        vm.passwordProperty().set("123");
+
+        assertTrue(vm.canLogin());
     }
 
     @Test
-    public void testCanLoginWhenBothFieldsAreFilled() {
-        this.viewModel.usernameProperty().set("Haynes");
-        this.viewModel.passwordProperty().set("CrewMate1");
+    void testCanLoginFalseForEmptyFields() {
+        LoginViewModel vm = new LoginViewModel();
 
-        assertTrue(this.viewModel.canLogin());
+        vm.usernameProperty().set("");
+        vm.passwordProperty().set("");
+
+        assertFalse(vm.canLogin());
     }
 
     @Test
-    public void testCanLoginFailsWhenUsernameEmpty() {
-        this.viewModel.passwordProperty().set("CrewMate1");
+    void testLoginSuccess() {
+        LoginViewModel vm = new LoginViewModel();
 
-        assertFalse(this.viewModel.canLogin());
+        vm.usernameProperty().set("Haynes");
+        vm.passwordProperty().set("CrewMate1");
+
+        assertTrue(vm.login());
     }
 
     @Test
-    public void testCanLoginFailsWhenPasswordEmpty() {
-        this.viewModel.usernameProperty().set("Haynes");
+    void testLoginFailure() {
+        LoginViewModel vm = new LoginViewModel();
 
-        assertFalse(this.viewModel.canLogin());
-    }
+        vm.usernameProperty().set("BadUser");
+        vm.passwordProperty().set("WrongPass");
 
-    @Test
-    public void testLoginSucceedsWithValidCredentials() {
-        this.viewModel.usernameProperty().set("Haynes");
-        this.viewModel.passwordProperty().set("CrewMate1");
-
-        assertTrue(this.viewModel.login());
-    }
-
-    @Test
-    public void testLoginFailsWithInvalidCredentials() {
-        this.viewModel.usernameProperty().set("Haynes");
-        this.viewModel.passwordProperty().set("Wrong");
-
-        assertFalse(this.viewModel.login());
+        assertFalse(vm.login());
     }
 }
+

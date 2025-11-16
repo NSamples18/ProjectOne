@@ -1,10 +1,16 @@
 package edu.westga.cs3211.LandingPage.view;
 
+import java.io.IOException;
+
 import edu.westga.cs3211.LandingPage.viewmodel.LandingPageViewModel;
 import edu.westga.cs3211.User.model.UserRole;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
 /**
  * Controller for the Landing Page.
@@ -85,7 +91,22 @@ public class LandingPageCodeBehind {
 
     @FXML
     private void handleLogout() {
-        System.out.println("Logout clicked");
-        // TODO: Return to LoginPage
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/edu/westga/cs3211/ProjectOne/view/LoginPage.fxml")
+            );
+
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root);
+            Stage window = (Stage) this.greetingLabel.getScene().getWindow();
+            window.setScene(scene);
+            window.setTitle("Login");
+            window.show();
+
+        } catch (IOException exp) {
+            exp.printStackTrace();
+        }
     }
+
 }

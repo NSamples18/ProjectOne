@@ -1,6 +1,7 @@
 module edu.westga.cs3211.ProjectOne {
     requires javafx.controls;
     requires javafx.fxml;
+	requires javafx.graphics;
 
     opens LoginPage.View to javafx.fxml;
     opens edu.westga.cs3211.LandingPage.view to javafx.fxml;

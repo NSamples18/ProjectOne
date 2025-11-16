@@ -21,13 +21,7 @@ public class LandingPageViewModel {
 	 * Instantiates a new greeting view model.
 	 */
 	public LandingPageViewModel() {
-		// this will set the CodeBehind's greetingLabel to Hello, World!
-		// because
-		// this.greetingLabel.textProperty().bind(this.viewModel.greetingProperty());
-		// i.e., the CodeBehind's greetingLabel.textProperty is
-		// unidirectionally bound to greetingProperty
-		// when the greetingProperty's text changes, it triggers the change
-		// in the CodeBehind's greetingLabel
+
 		this.greetingProperty = new SimpleStringProperty("Hello, World!");
 		this.nameProperty = new SimpleStringProperty("");
 		this.allNamesProperty = new SimpleStringProperty("");

@@ -3,6 +3,7 @@ package LoginPage.View;
 import java.io.IOException;
 
 import LoginPage.ViewModal.LoginViewModel;
+import edu.westga.cs3211.LandingPage.view.LandingPageCodeBehind;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -48,32 +49,34 @@ public class LoginPageController {
 
     @FXML
     private void handleLogin() {
-
         boolean success = this.viewModel.login();
+        String username = this.viewModel.getUserName();
 
         if (success) {
-            this.goToLandingPage();
+            this.goToLandingPage(username);
         } else {
             System.out.println("Invalid username or password");
         }
     }
 
-    private void goToLandingPage() {
+    private void goToLandingPage(String username) {
         try {
-            Parent root = FXMLLoader.load(
-                getClass().getResource("/edu/westga/cs3211/ProjectOne/view/LandingPage.fxml")
-            );
+            String path = "/edu/westga/cs3211/ProjectOne/view/LandingPage.fxml";
 
-            Scene scene = new Scene(root);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+            Parent root = loader.load();
+
+            LandingPageCodeBehind controller = loader.getController();
+            controller.setGreeting(username);
 
             Stage window = (Stage) this.loginBtn.getScene().getWindow();
-            window.setScene(scene);
-            window.setTitle("Landing Page");
+            window.setScene(new Scene(root));
             window.show();
 
         } catch (IOException exp) {
             exp.printStackTrace();
         }
     }
+
 }
 

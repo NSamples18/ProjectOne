@@ -72,6 +72,14 @@ public class LoginViewModel {
             this.password.get()
         );
     }
+    
+    /**
+     * gets the user name
+     * @return the user name.
+     */
+    public String getUserName() {
+        return this.username.get();
+    }
 }
 
 

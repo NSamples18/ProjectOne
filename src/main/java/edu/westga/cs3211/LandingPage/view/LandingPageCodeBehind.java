@@ -1,6 +1,6 @@
 package edu.westga.cs3211.LandingPage.view;
 
-import edu.westga.cs3211.LandingPage.viewmodel.GreetingViewModel;
+import edu.westga.cs3211.LandingPage.viewmodel.LandingPageViewModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
@@ -14,7 +14,7 @@ import javafx.scene.control.TextField;
  * @author CS 3211
  * @version Fall 2025
  */
-public class GreetingCodeBehind {
+public class LandingPageCodeBehind {
 
 	@FXML
 	private TextField nameTextField;
@@ -28,7 +28,7 @@ public class GreetingCodeBehind {
 	@FXML
     private TextArea namesTextArea;
 
-	private GreetingViewModel viewModel;
+	private LandingPageViewModel viewModel;
 
 	/**
 	 * Instantiates a new greeting code behind.
@@ -36,8 +36,8 @@ public class GreetingCodeBehind {
 	 * @precondition none
 	 * @precondition none
 	 */
-	public GreetingCodeBehind() {
-		this.viewModel = new GreetingViewModel();
+	public LandingPageCodeBehind() {
+		this.viewModel = new LandingPageViewModel();
 	}
 
 	@FXML

@@ -11,7 +11,7 @@ import javafx.beans.property.StringProperty;
  * @version Fall 2025
  */
 
-public class GreetingViewModel {
+public class LandingPageViewModel {
 
 	private StringProperty greetingProperty;
 	private StringProperty nameProperty;
@@ -20,7 +20,7 @@ public class GreetingViewModel {
 	/**
 	 * Instantiates a new greeting view model.
 	 */
-	public GreetingViewModel() {
+	public LandingPageViewModel() {
 		// this will set the CodeBehind's greetingLabel to Hello, World!
 		// because
 		// this.greetingLabel.textProperty().bind(this.viewModel.greetingProperty());

@@ -1,49 +1,40 @@
 package edu.westga.cs3211.ProjectOne;
 
-import java.io.IOException;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.Parent;
 
 /**
  * Main Application class.
- * @author CS 3211
+ * Loads LoginPage.fxml first.
+ * 
+ * @author ns00184
  * @version Fall 2025
  */
 public class Main extends Application {
 
-	private static final String WINDOW_TITLE = "Greetings";
-	private static final String GUI_FXML = "view/hello.fxml";
-  
-	@Override
-	public void start(Stage primaryStage) {
-		try {
-			Pane root = this.loadGui();
-			Scene scene = new Scene(root);
+    private static final String LOGIN_FXML = "/edu/westga/cs3211/ProjectOne/view/LoginPage.fxml";
 
-			primaryStage.setScene(scene);
-			primaryStage.setTitle(WINDOW_TITLE);
-			primaryStage.show();
-		} catch (Exception exc) {
-			exc.printStackTrace();
-		}
-	}
+    @Override
+    public void start(Stage primaryStage) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(LOGIN_FXML));
+            Scene scene = new Scene(root);
 
-	private Pane loadGui() throws IOException {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource(GUI_FXML));
-		return (Pane) loader.load();
-	}
-
-	/**
-	 * Entry point for the application
-	 * 
-	 * @param args not used
-	 */
-	public static void main(String[] args) {
-		launch(args);
-	}
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Login");
+            primaryStage.show();
+        } catch (Exception exc) {
+            exc.printStackTrace();
+        }
+    }
+    
+    /** 
+     *  Entry point for the application 
+     *  @param args not used */
+    public static void main(String[] args) {
+        launch(args);
+    }
 }

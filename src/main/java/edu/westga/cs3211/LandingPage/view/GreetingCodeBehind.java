@@ -1,6 +1,6 @@
-package edu.westga.cs3211.helloworld.view;
+package edu.westga.cs3211.LandingPage.view;
 
-import edu.westga.cs3211.helloworld.viewmodel.GreetingViewModel;
+import edu.westga.cs3211.LandingPage.viewmodel.GreetingViewModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 

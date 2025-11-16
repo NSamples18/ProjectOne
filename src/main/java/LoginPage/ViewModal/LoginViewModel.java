@@ -1,6 +1,7 @@
 package LoginPage.ViewModal;
 
 import edu.westga.cs3211.User.model.Authenticator;
+import edu.westga.cs3211.User.model.UserRole;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -80,6 +81,15 @@ public class LoginViewModel {
     public String getUserName() {
         return this.username.get();
     }
+    
+    /**
+     * gets the current user role.
+     * @return the users role.
+     */
+    public UserRole getUserRole() {
+        return this.authenticator.getUserRole(this.username.get());
+    }
+
 }
 
 

@@ -18,6 +18,29 @@ public class Authenticator {
     	this.users.add(new User("Brent", "QMaster1", UserRole.Quartermaster));
     }
     
+    /**
+     * Returns the UserRole for the given username.
+     *
+     * @precondition username != null
+     * @postcondition none
+     *
+     * @param username the username to look up
+     * @return the user's role, or null if no match
+     */
+    public UserRole getUserRole(String username) {
+        if (username == null) {
+            throw new IllegalArgumentException("username cannot be null");
+        }
+
+        for (User user : this.users) {
+            if (user.getName().equals(username)) {
+                return user.getRole();
+            }
+        }
+
+        return null;
+    }
+    
 
     
     /**

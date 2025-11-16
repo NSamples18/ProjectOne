@@ -1,6 +1,7 @@
 package edu.westga.cs3211.LandingPage.view;
 
 import edu.westga.cs3211.LandingPage.viewmodel.LandingPageViewModel;
+import edu.westga.cs3211.User.model.UserRole;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -41,12 +42,26 @@ public class LandingPageCodeBehind {
     /**
      * Sets the greeting text using the logged-in user’s name.
      * 
+     * @param username the username of the user.
      * @precondition username != null
      * @postcondition greetingLabel shows "Hello, username!"
      */
     public void setGreeting(String username) {
         this.greetingLabel.setText("Hello, " + username + "!");
     }
+    
+    /**
+     * Makes it so the quatermaster see's the view stock button.
+     * @param role the role of the user.
+     */
+    public void configureForRole(UserRole role) {
+        if (role == UserRole.Crew) {
+            this.viewStockButton.setVisible(false);
+        } else if (role == UserRole.Quartermaster) {
+            this.viewStockButton.setVisible(true);
+        }
+    }
+
 
     /**
      * Initializes the controller after the FXML is loaded.

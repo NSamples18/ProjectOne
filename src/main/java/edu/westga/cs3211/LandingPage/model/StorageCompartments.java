@@ -8,6 +8,7 @@ package edu.westga.cs3211.LandingPage.model;
 public enum StorageCompartments {
 	WOODBARREL,
 	FRIDGE,
-	METALBARREL
+	HAZMAT_LOCKER,
+	TANK
 
 }

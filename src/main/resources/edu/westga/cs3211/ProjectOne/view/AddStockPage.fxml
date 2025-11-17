@@ -53,12 +53,12 @@
                    GridPane.rowIndex="0"
                    prefWidth="250"/>
 
-        <Label text="Size:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <Label text="Quantity:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
         <TextField fx:id="sizeField"
                    GridPane.columnIndex="1"
                    GridPane.rowIndex="1"/>
 
-        <Label text="Special Quals:"
+        <Label text="Special Qualities:"
                GridPane.columnIndex="0"
                GridPane.rowIndex="2"/>
         <ComboBox fx:id="specialCombo"
@@ -78,6 +78,14 @@
         <DatePicker fx:id="expirationDatePicker"
                     GridPane.columnIndex="1"
                     GridPane.rowIndex="4"/>
+                    
+        <Label text="Storage Type:"
+       GridPane.columnIndex="0"
+       GridPane.rowIndex="5"/>
+
+		<ComboBox fx:id="compartmentCombo"
+          GridPane.columnIndex="1"
+          GridPane.rowIndex="5"/>
     </GridPane>
 
     <Button text="Submit Stock"

@@ -15,6 +15,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * ViewModel for the Add Stock page.
@@ -30,6 +32,8 @@ public class AddStockViewModel {
     private final ObjectProperty<Condition> condition;
     private final ObjectProperty<LocalDate> expiration;
     private final BooleanProperty canSubmit;
+    private final ObjectProperty<Compartment> selectedCompartment;
+    private final ObservableList<Compartment> availableCompartments = FXCollections.observableArrayList();
     private User currentUser;
 
     /**
@@ -42,6 +46,8 @@ public class AddStockViewModel {
         this.special = new SimpleObjectProperty<>();
         this.condition = new SimpleObjectProperty<>();
         this.expiration = new SimpleObjectProperty<>();
+        this.selectedCompartment = new SimpleObjectProperty<>(null);
+
         this.canSubmit = new SimpleBooleanProperty(false);
         this.canSubmit.bind(
         	    this.name.isNotEmpty()
@@ -165,5 +171,32 @@ public class AddStockViewModel {
      */
     public void addStockToCompartment(Stock stock, Compartment compartment) {
         this.inventoryService.addStockToCompartment(this.currentUser, stock, compartment);
+    }
+    
+    public void loadCompatibleCompartments(Stock stock) {
+        List<Compartment> compartments = this.inventoryService.findCompatibleCompartments(stock);
+        this.availableCompartments.setAll(compartments);
+    }
+    
+    public ObservableList<Compartment> getAvailableCompartments() {
+        return this.availableCompartments;
+    }
+    
+    public ObjectProperty<Compartment> selectedCompartmentProperty() {
+        return this.selectedCompartment;
+    }
+    
+    /**
+     * Returns selected compartment.
+     */
+    public Compartment getSelectedCompartment() {
+        return this.selectedCompartment.get();
+    }
+
+    /**
+     * Sets selected compartment.
+     */
+    public void setSelectedCompartment(Compartment compartment) {
+        this.selectedCompartment.set(compartment);
     }
 }

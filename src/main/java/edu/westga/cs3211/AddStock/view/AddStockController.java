@@ -50,6 +50,9 @@ public class AddStockController {
     
     @FXML
     private Button reviewButton;
+    
+    @FXML
+    private ComboBox<Compartment> compartmentCombo;
 
     private AddStockViewModel viewModel;
     
@@ -70,6 +73,8 @@ public class AddStockController {
         this.specialCombo.valueProperty().bindBidirectional(this.viewModel.specialProperty());
         this.conditionCombo.valueProperty().bindBidirectional(this.viewModel.conditionProperty());
         this.expirationDatePicker.valueProperty().bindBidirectional(this.viewModel.expirationProperty());
+        this.compartmentCombo.itemsProperty().set(this.viewModel.getAvailableCompartments());
+        this.compartmentCombo.valueProperty().bindBidirectional(this.viewModel.selectedCompartmentProperty());
         this.submitButton.disableProperty().bind(this.viewModel.canSubmitProperty().not());
         
         this.checkUserRole(user);
@@ -87,13 +92,10 @@ public class AddStockController {
         this.conditionCombo.getItems().setAll(Condition.values());
     }
 
-    /**
-     * Handles submitting the stock to the system.
-     */
     @FXML
     private void handleSubmit() {
         Stock stock = this.viewModel.buildStockOrNull();
-        if (stock == null) {
+        if (!isValidStock(stock)) {
             this.showAlert(Alert.AlertType.ERROR, "Invalid Input", "Please check all fields.");
             return;
         }
@@ -101,17 +103,43 @@ public class AddStockController {
         List<Compartment> compatible = this.viewModel.findCompatibleCompartments(stock);
         if (compatible.isEmpty()) {
             this.showAlert(Alert.AlertType.WARNING, "No Compatible Compartment",
-                "No compartment can store this stock.");
+                    "No compartment can store this stock.");
             return;
         }
 
-        Compartment selected = compatible.get(0);
-        this.viewModel.addStockToCompartment(stock, selected);
+        if (!hasUserSelectedCompartment()) {
+            prepareCompartmentSelection(compatible);
+            return;
+        }
 
+        Compartment selected = this.compartmentCombo.getValue();
+        if (!compatible.contains(selected)) {
+            prepareCompartmentSelection(compatible);
+            return;
+        }
+
+        this.viewModel.addStockToCompartment(stock, selected);
         this.showAlert(Alert.AlertType.INFORMATION, "Success", "Stock successfully added.");
 
         this.resetFields();
+        this.compartmentCombo.getItems().clear();
     }
+    
+    private boolean isValidStock(Stock stock) {
+        return stock != null;
+    }
+
+    private boolean hasUserSelectedCompartment() {
+        return this.compartmentCombo.getValue() != null;
+    }
+
+    private void prepareCompartmentSelection(List<Compartment> compatible) {
+        this.compartmentCombo.getItems().setAll(compatible);
+        this.showAlert(Alert.AlertType.INFORMATION, 
+                "Select Compartment", 
+                "Please select a storage compartment from the list, then click Submit again.");
+    }
+
 
 	private void resetFields() {
 		this.nameField.clear();

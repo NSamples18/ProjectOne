@@ -55,8 +55,8 @@ public class ReviewStockViewModelTest {
         Stock dummyNone = new Stock(0, "dummy-none", SpecialQualities.NONE, Condition.PERFECT, null);
         Stock dummyPer = new Stock(0, "dummy-per", SpecialQualities.PERISHABLE, Condition.PERFECT, null);
 
-        this.normalComp = new Compartment(dummyNone, "NONE", 100);
-        this.perishableComp = new Compartment(dummyPer, "PERISHABLE", 100);
+//        this.normalComp = new Compartment(dummyNone, "NONE", 100);
+//        this.perishableComp = new Compartment(dummyPer, "PERISHABLE", 100);
 
         this.t1 = LocalDateTime.now().minusDays(2);
         this.t2 = LocalDateTime.now().minusDays(1);

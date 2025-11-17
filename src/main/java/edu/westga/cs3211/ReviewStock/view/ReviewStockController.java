@@ -69,7 +69,10 @@ public class ReviewStockController {
                 new SimpleStringProperty(sc.getValue().getStock().getName()));
 
         this.compartmentCol.setCellValueFactory(sc ->
-                new SimpleStringProperty(sc.getValue().getCompartment().getSpecialQuals()));
+        new SimpleStringProperty(
+                sc.getValue().getCompartment().getCompartmentType().name()
+            )
+        );
 
         this.remainingCol.setCellValueFactory(sc ->
                 new SimpleStringProperty(

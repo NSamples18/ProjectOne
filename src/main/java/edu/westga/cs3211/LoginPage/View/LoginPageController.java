@@ -1,9 +1,9 @@
-package LoginPage.View;
+package edu.westga.cs3211.LoginPage.View;
 
 import java.io.IOException;
 
-import LoginPage.ViewModal.LoginViewModel;
 import edu.westga.cs3211.LandingPage.view.LandingPageCodeBehind;
+import edu.westga.cs3211.LoginPage.ViewModel.LoginViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -55,29 +55,21 @@ public class LoginPageController {
     private void handleLogin() {
         try {
             if (this.viewModel.login()) {
-
                 FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/edu/westga/cs3211/ProjectOne/view/LandingPage.fxml")
                 );
 
                 Parent root = loader.load();
-
                 LandingPageCodeBehind controller = loader.getController();
-                controller.init(
-                    this.viewModel.loggedInUsernameProperty().get(),
-                    this.viewModel.loggedInRoleProperty().get()
-                );
+                controller.init(this.viewModel.getLoggedInUser());
 
                 Stage stage = (Stage) this.loginButton.getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.setTitle("Landing Page");
                 stage.show();
-
-            } else {
-                System.out.println("Invalid login.");
             }
-        } catch (IOException exp) {
-            exp.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

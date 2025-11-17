@@ -16,6 +16,7 @@ public class Authenticator {
     public Authenticator() {
     	this.users.add(new User("Haynes", "CrewMate1", UserRole.Crew));
     	this.users.add(new User("Brent", "QMaster1", UserRole.Quartermaster));
+    	this.users.add(new User("f", "f", UserRole.Crew));
     }
     
     /**

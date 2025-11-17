@@ -2,7 +2,8 @@
 
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
+			fx:controller="edu.westga.cs3211.ViewStock.view.ViewStockChangesController">
 	<!-- TODO Add Nodes -->
 </AnchorPane>
 

@@ -1,4 +1,4 @@
-package edu.westga.cs3211.LandingPage.modal;
+package edu.westga.cs3211.LandingPage.model;
 
 /**
  * defines the compartment.

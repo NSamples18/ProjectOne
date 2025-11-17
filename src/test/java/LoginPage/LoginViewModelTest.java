@@ -3,7 +3,7 @@ package LoginPage;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import LoginPage.ViewModal.LoginViewModel;
+import edu.westga.cs3211.LoginPage.ViewModel.LoginViewModel;
 
 class LoginViewModelTests {
 

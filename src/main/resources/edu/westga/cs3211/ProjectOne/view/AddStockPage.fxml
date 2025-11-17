@@ -61,7 +61,7 @@
         <Label text="Special Quals:"
                GridPane.columnIndex="0"
                GridPane.rowIndex="2"/>
-        <TextField fx:id="specialQualsField"
+        <ComboBox fx:id="specialCombo"
                    GridPane.columnIndex="1"
                    GridPane.rowIndex="2"/>
 

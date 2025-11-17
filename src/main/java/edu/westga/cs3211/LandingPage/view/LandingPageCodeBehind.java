@@ -2,7 +2,9 @@ package edu.westga.cs3211.LandingPage.view;
 
 import java.io.IOException;
 
+import edu.westga.cs3211.AddStock.view.AddStockController;
 import edu.westga.cs3211.LandingPage.viewmodel.LandingPageViewModel;
+import edu.westga.cs3211.User.model.User;
 import edu.westga.cs3211.User.model.UserRole;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,6 +28,8 @@ public class LandingPageCodeBehind {
     @FXML
     private Button logoutButton;
 
+    private User currentUser;
+
     private LandingPageViewModel viewModel;
 
     public LandingPageCodeBehind() {
@@ -42,14 +46,32 @@ public class LandingPageCodeBehind {
     /**
      * Called by Login controller immediately after loading the page.
      */
-    public void init(String username, UserRole role) {
-        this.viewModel.initialize(username, role);
+    public void init(User user) {
+        this.viewModel = new LandingPageViewModel();
+        this.viewModel.initialize(user.getName(), user.getRole());
+        this.greetingLabel.textProperty().bind(this.viewModel.greetingProperty());
+        this.viewStockButton.visibleProperty().bind(this.viewModel.viewStockVisibleProperty());
+        this.currentUser = user;
     }
 
     @FXML
     private void handleAddStock() {
-        loadPage("/edu/westga/cs3211/ProjectOne/view/AddStockPage.fxml", "Add Stock");
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/edu/westga/cs3211/ProjectOne/view/AddStockPage.fxml"));
+            Parent root = loader.load();
+
+            AddStockController controller = loader.getController();
+            controller.init(this.currentUser);
+
+            Stage stage = (Stage) this.addStockButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Add Stock");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     @FXML
     private void handleViewStock() {
@@ -58,15 +80,15 @@ public class LandingPageCodeBehind {
 
     @FXML
     private void handleLogout() {
-        loadPage("/LoginPage/View/LoginPage.fxml", "Login");
+        this.loadPage("/edu/westga/cs3211/ProjectOne/view/LoginPage.fxml", "Login");
     }
 
-    private void loadPage(String path, String title) {
+    private void loadPage(String fullPath, String title) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fullPath));
             Parent root = loader.load();
 
-            Stage stage = (Stage) this.addStockButton.getScene().getWindow();
+            Stage stage = (Stage) this.logoutButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle(title);
             stage.show();

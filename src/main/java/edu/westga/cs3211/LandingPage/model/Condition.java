@@ -1,4 +1,4 @@
-package edu.westga.cs3211.LandingPage.modal;
+package edu.westga.cs3211.LandingPage.model;
 
 /**
  * defines the condition.
@@ -6,7 +6,7 @@ package edu.westga.cs3211.LandingPage.modal;
  * @version 2025
  */
 public enum Condition {
-	Bad,
-	Good,
-	Perfect,
+	UNSUABLE,
+	USABLE,
+	PERFECT,
 }

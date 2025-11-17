@@ -1,4 +1,4 @@
-package edu.westga.cs3211.LandingPage.modal;
+package edu.westga.cs3211.LandingPage.model;
 
 import java.time.LocalDate;
 
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class Stock {
 	private int size;
 	private String name;
-	private String specialQuals;
+	private SpecialQualities specialQuals;
 	private Condition condition;
 	private LocalDate expirationDate;
 	
@@ -31,7 +31,7 @@ public class Stock {
     * @param condition the item's condition
     * @param expirationDate the expiration date
     */
-	public Stock(int size, String name, String specialQuals, Condition condition, LocalDate expirationDate) {
+	public Stock(int size, String name, SpecialQualities specialQuals, Condition condition, LocalDate expirationDate) {
         if (name == null) {
             throw new IllegalArgumentException("name cannot be null");
         }
@@ -40,9 +40,6 @@ public class Stock {
         }
         if (condition == null) {
             throw new IllegalArgumentException("condition cannot be null");
-        }
-        if (expirationDate == null) {
-            throw new IllegalArgumentException("expirationDate cannot be null");
         }
 
         this.size = size;
@@ -84,7 +81,7 @@ public class Stock {
      * 
      * @return the special qualifications text
      */
-    public String getSpecialQuals() {
+    public SpecialQualities getSpecialQuals() {
         return this.specialQuals;
     }
 

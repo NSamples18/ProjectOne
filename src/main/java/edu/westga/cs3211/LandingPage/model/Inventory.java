@@ -1,4 +1,4 @@
-package edu.westga.cs3211.LandingPage.modal;
+package edu.westga.cs3211.LandingPage.model;
 
 import java.util.ArrayList;
 import java.util.Collection;

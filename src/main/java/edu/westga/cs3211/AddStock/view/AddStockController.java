@@ -78,15 +78,17 @@ public class AddStockController {
         this.submitButton.disableProperty().bind(this.viewModel.canSubmitProperty().not());
         
         this.checkUserRole(user);
-    }
+    } 
 
 	private void checkUserRole(User user) {
 		boolean isQuartermaster = user.getRole() == UserRole.Quartermaster;
         this.reviewButton.setVisible(isQuartermaster);
 	}
-
     
-    @FXML
+	/**
+	 * initializes the addstock controler.
+	 */
+	@FXML
     public void initialize() {
         this.specialCombo.getItems().setAll(SpecialQualities.values());
         this.conditionCombo.getItems().setAll(Condition.values());
@@ -95,7 +97,7 @@ public class AddStockController {
     @FXML
     private void handleSubmit() {
         Stock stock = this.viewModel.buildStockOrNull();
-        if (!isValidStock(stock)) {
+        if (!this.isValidStock(stock)) {
             this.showAlert(Alert.AlertType.ERROR, "Invalid Input", "Please check all fields.");
             return;
         }
@@ -107,14 +109,14 @@ public class AddStockController {
             return;
         }
 
-        if (!hasUserSelectedCompartment()) {
-            prepareCompartmentSelection(compatible);
+        if (!this.hasUserSelectedCompartment()) {
+            this.prepareCompartmentSelection(compatible);
             return;
         }
 
         Compartment selected = this.compartmentCombo.getValue();
         if (!compatible.contains(selected)) {
-            prepareCompartmentSelection(compatible);
+            this.prepareCompartmentSelection(compatible);
             return;
         }
 
@@ -140,7 +142,6 @@ public class AddStockController {
                 "Please select a storage compartment from the list, then click Submit again.");
     }
 
-
 	private void resetFields() {
 		this.nameField.clear();
         this.sizeField.clear();
@@ -163,8 +164,8 @@ public class AddStockController {
             Stage stage = (Stage) this.nameField.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Landing Page");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -209,8 +210,8 @@ public class AddStockController {
             Stage stage = (Stage) this.nameField.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Login");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -222,10 +223,10 @@ public class AddStockController {
      * @param message the alert message
      */
     private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert a = new Alert(type);
-        a.setTitle(title);
-        a.setHeaderText(null);
-        a.setContentText(message);
-        a.showAndWait();
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

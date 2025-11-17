@@ -29,6 +29,35 @@ class AddStockViewModelTest {
     }
 
     @Test
+    void testCanSubmitPropertyUpdatesCorrectly() {
+        assertFalse(vm.canSubmitProperty().get());
+
+        vm.nameProperty().set("Oil");
+        assertFalse(vm.canSubmitProperty().get());
+
+        vm.sizeProperty().set("10");
+        assertFalse(vm.canSubmitProperty().get());
+
+        vm.specialProperty().set(SpecialQualities.NONE);
+        assertFalse(vm.canSubmitProperty().get());
+
+        vm.conditionProperty().set(Condition.PERFECT);
+        assertTrue(vm.canSubmitProperty().get());
+    }
+
+    @Test
+    void testFindCompatibleCompartmentsDelegatesToInventoryService() {
+        Stock s = new Stock(5, "Test", SpecialQualities.NONE, Condition.PERFECT, LocalDate.now());
+
+        List<Compartment> expected = InventoryService.getInstance().findCompatibleCompartments(s);
+
+        List<Compartment> result = vm.findCompatibleCompartments(s);
+
+        assertEquals(expected.size(), result.size());
+        assertEquals(expected, result);
+    }
+
+    @Test
     void testSetCurrentUserStoresUser() {
         User user = new User("Bob", "bob123", UserRole.Crew);
         vm.setCurrentUser(user);
@@ -77,7 +106,7 @@ class AddStockViewModelTest {
     @Test
     void testBuildStockOrNullFailsOnNegativeSize() {
         vm.nameProperty().set("Test");
-        vm.sizeProperty().set("-5");  
+        vm.sizeProperty().set("-5");
         vm.conditionProperty().set(Condition.PERFECT);
         vm.specialProperty().set(SpecialQualities.NONE);
 
@@ -101,7 +130,8 @@ class AddStockViewModelTest {
         vm.sizeProperty().set("10");
         vm.conditionProperty().set(Condition.USABLE);
         vm.specialProperty().set(SpecialQualities.NONE);
-        vm.expirationProperty().set(null); 
+        vm.expirationProperty().set(null);
+
         Stock s = vm.buildStockOrNull();
 
         assertNotNull(s);

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.westga.cs3211.LandingPage.model.Compartment;
+import edu.westga.cs3211.LandingPage.model.Condition;
 import edu.westga.cs3211.LandingPage.model.Inventory;
 import edu.westga.cs3211.LandingPage.model.SpecialQualities;
 import edu.westga.cs3211.LandingPage.model.Stock;
@@ -18,7 +19,7 @@ import edu.westga.cs3211.User.model.User;
  * @author ns00184
  * @version 2025
  */
-public class InventoryService {
+public final class InventoryService {
 
     private static final InventoryService INSTANCE = new InventoryService();
 
@@ -32,26 +33,26 @@ public class InventoryService {
         LocalDate farFuture = LocalDate.of(9999, 12, 31);
 
         Stock emptyGeneral = new Stock(0, "EMPTY_GENERAL",
-                SpecialQualities.NONE, edu.westga.cs3211.LandingPage.model.Condition.PERFECT, farFuture);
+                SpecialQualities.NONE, Condition.PERFECT, farFuture);
 
         Stock emptyPerishable = new Stock(0, "EMPTY_PERISHABLE",
-                SpecialQualities.PERISHABLE, edu.westga.cs3211.LandingPage.model.Condition.PERFECT, farFuture);
+                SpecialQualities.PERISHABLE, Condition.PERFECT, farFuture);
 
         Stock emptyFlammable = new Stock(0, "EMPTY_FLAMMABLE",
-                SpecialQualities.FLAMMABLE, edu.westga.cs3211.LandingPage.model.Condition.PERFECT, farFuture);
+                SpecialQualities.FLAMMABLE, Condition.PERFECT, farFuture);
 
         Stock emptyLiquid = new Stock(0, "EMPTY_LIQUID",
-                SpecialQualities.LIQUID, edu.westga.cs3211.LandingPage.model.Condition.PERFECT, farFuture);
+                SpecialQualities.LIQUID, Condition.PERFECT, farFuture);
 
         Compartment woodBarrel = new Compartment(emptyGeneral, StorageCompartments.WOODBARREL, 200);
         Compartment fridge = new Compartment(emptyPerishable, StorageCompartments.FRIDGE, 150);
-        Compartment metalBarrelFlammable = new Compartment(emptyFlammable, StorageCompartments.HAZMAT_LOCKER, 100);
-        Compartment metalBarrelLiquid = new Compartment(emptyLiquid, StorageCompartments.HAZMAT_LOCKER, 120);
+        Compartment hazmatLocker = new Compartment(emptyFlammable, StorageCompartments.HAZMAT_LOCKER, 100);
+        Compartment tank = new Compartment(emptyLiquid, StorageCompartments.TANK, 120);
 
         this.inventory.addCompartment(woodBarrel);
         this.inventory.addCompartment(fridge);
-        this.inventory.addCompartment(metalBarrelFlammable);
-        this.inventory.addCompartment(metalBarrelLiquid);
+        this.inventory.addCompartment(hazmatLocker);
+        this.inventory.addCompartment(tank);
     }
 
     /**

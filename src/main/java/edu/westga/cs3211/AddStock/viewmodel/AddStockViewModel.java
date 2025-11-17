@@ -130,24 +130,30 @@ public class AddStockViewModel {
      */
     public Stock buildStockOrNull() {
         try {
-            int parsedSize = Integer.parseInt(this.size.get());
+            if (this.name.get() == null || this.name.get().trim().isEmpty()) {
+                return null;
+            }
 
-            LocalDate expirationDate = this.expiration.get();
+            int parsedSize = Integer.parseInt(this.size.get());
+            if (parsedSize <= 0) {
+                return null;
+            }
 
             if (this.special.get() == SpecialQualities.PERISHABLE
                     && this.expiration.get() == null) {
                 return null;
             }
 
-             expirationDate = this.expiration.get();
+            LocalDate expirationDate = this.expiration.get();
 
             return new Stock(
-                parsedSize,
-                this.name.get(),
-                this.special.get(),
-                this.condition.get(),
-                expirationDate
+                    parsedSize,
+                    this.name.get(),
+                    this.special.get(),
+                    this.condition.get(),
+                    expirationDate
             );
+
         } catch (Exception ex) {
             return null;
         }
@@ -173,21 +179,35 @@ public class AddStockViewModel {
         this.inventoryService.addStockToCompartment(this.currentUser, stock, compartment);
     }
     
+    /**
+     * loads the compartment stock.
+     * @param stock the stock loaded in.
+     */
     public void loadCompatibleCompartments(Stock stock) {
         List<Compartment> compartments = this.inventoryService.findCompatibleCompartments(stock);
         this.availableCompartments.setAll(compartments);
     }
     
+    /**
+     * Gets the avalible compartment.
+     * @return return the avalible compartment
+     */
     public ObservableList<Compartment> getAvailableCompartments() {
         return this.availableCompartments;
     }
     
+    /**
+     * the selected compartment.
+     * @return return the selected compartment.
+     */
     public ObjectProperty<Compartment> selectedCompartmentProperty() {
         return this.selectedCompartment;
     }
     
     /**
      * Returns selected compartment.
+     * 
+     * @return the selected compartment.
      */
     public Compartment getSelectedCompartment() {
         return this.selectedCompartment.get();
@@ -195,6 +215,8 @@ public class AddStockViewModel {
 
     /**
      * Sets selected compartment.
+     * 
+     * @param compartment the selected compartment.
      */
     public void setSelectedCompartment(Compartment compartment) {
         this.selectedCompartment.set(compartment);

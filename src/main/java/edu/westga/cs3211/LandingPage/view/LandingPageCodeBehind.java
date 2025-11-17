@@ -6,7 +6,6 @@ import edu.westga.cs3211.AddStock.view.AddStockController;
 import edu.westga.cs3211.LandingPage.viewmodel.LandingPageViewModel;
 import edu.westga.cs3211.ReviewStock.view.ReviewStockController;
 import edu.westga.cs3211.User.model.User;
-import edu.westga.cs3211.User.model.UserRole;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,7 +14,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
-public class LandingPageCodeBehind {
+/**
+ * the defines the view.
+ * @author ns00184
+ * @version 2025
+ */
+public final class LandingPageCodeBehind {
 
     @FXML
     private Label greetingLabel;
@@ -32,8 +36,8 @@ public class LandingPageCodeBehind {
     private User currentUser;
 
     private LandingPageViewModel viewModel;
-
-    public LandingPageCodeBehind() {
+    
+    private LandingPageCodeBehind() {
         this.viewModel = new LandingPageViewModel();
     }
 
@@ -45,6 +49,7 @@ public class LandingPageCodeBehind {
 
     /**
      * Called by Login controller immediately after loading the page.
+     * @param user takes in the user.
      */
     public void init(User user) {
         this.viewModel = new LandingPageViewModel();
@@ -67,8 +72,8 @@ public class LandingPageCodeBehind {
             Stage stage = (Stage) this.addStockButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Add Stock");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -89,8 +94,8 @@ public class LandingPageCodeBehind {
             stage.setTitle("Review Stock");
             stage.show();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

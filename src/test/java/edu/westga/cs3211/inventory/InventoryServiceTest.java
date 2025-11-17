@@ -134,4 +134,25 @@ class InventoryServiceTest {
         List<StockChange> readOnlyList = this.service.getStockChanges();
         assertThrows(UnsupportedOperationException.class, () -> readOnlyList.add(null));
     }
+    
+    @Test
+    void testFindCompatibleCompartmentsIncludesTankForLiquidStock() {
+        InventoryService service = InventoryService.getInstance();
+
+        Stock liquid = new Stock(
+                10,
+                "Oil",
+                SpecialQualities.LIQUID,
+                Condition.PERFECT,
+                LocalDate.now().plusDays(10)
+        );
+
+        List<Compartment> compatible = service.findCompatibleCompartments(liquid);
+
+        assertTrue(
+            compatible.stream()
+                      .anyMatch(c -> c.getCompartmentType() == StorageCompartments.TANK),
+            "Expected TANK to be a compatible compartment"
+        );
+    }
 }

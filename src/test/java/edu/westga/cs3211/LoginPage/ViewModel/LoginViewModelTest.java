@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import edu.westga.cs3211.User.model.User;
+import edu.westga.cs3211.User.model.UserRole;
 
 class LoginViewModelTest {
 
@@ -28,14 +28,15 @@ class LoginViewModelTest {
 
     @Test
     void testLoginSucceedsForValidCredentials() {
-        vm.usernameProperty().set("Quartermaster");
-        vm.passwordProperty().set("qm123");
+        vm.usernameProperty().set("Haynes");
+        vm.passwordProperty().set("CrewMate1");
 
         boolean result = vm.login();
 
         assertTrue(result);
         assertNotNull(vm.getLoggedInUser());
-        assertEquals("Quartermaster", vm.getLoggedInUser().getName());
+        assertEquals("Haynes", vm.getLoggedInUser().getName());
+        assertEquals(UserRole.Crew, vm.getLoggedInUser().getRole());
     }
 
     @Test

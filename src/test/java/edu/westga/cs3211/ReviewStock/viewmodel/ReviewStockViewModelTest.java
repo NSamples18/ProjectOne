@@ -173,4 +173,49 @@ class ReviewStockViewModelTest {
         vm.clearFilters();
         assertEquals(2, vm.getDisplayedChanges().size());
     }
+    
+    @Test
+    void testApplyFiltersThrowsOnInvalidDateRange() {
+        ReviewStockViewModel vm = new ReviewStockViewModel();
+
+        vm.startDateFilterProperty().set(LocalDate.of(2025, 1, 10));
+        vm.endDateFilterProperty().set(LocalDate.of(2025, 1, 10)); // equal → invalid
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            vm.applyFilters();
+        });
+    }
+    
+    @Test
+    void testApplyFiltersWithStartDateOnlyDoesNotThrow() {
+        ReviewStockViewModel vm = new ReviewStockViewModel();
+
+        vm.startDateFilterProperty().set(LocalDate.now());
+        vm.endDateFilterProperty().set(null);  // important branch
+
+        assertDoesNotThrow(() -> vm.applyFilters());
+    }
+    
+    @Test
+    void testApplyFiltersWithNullSpecialFilterDoesNotFilterBySpecial() {
+        // Create two changes with different special qualities
+        StockChange c1 = makeChange(userA, noneStock, barrel, LocalDateTime.now());
+        StockChange c2 = makeChange(userA, perishableStock, fridge, LocalDateTime.now());
+
+        ReviewStockViewModel vm = new ReviewStockViewModel();
+
+        // crew filter used so applyFilters does more than nothing,
+        // making Jacoco observe the specialFilter null branch
+        vm.crewFilterProperty().set(userA);
+
+        // IMPORTANT: ensure specialFilter is null
+        vm.specialFilterProperty().set(null);
+
+        vm.applyFilters();
+
+        // Both records match crew filter, so both should appear
+        assertEquals(2, vm.getDisplayedChanges().size());
+        assertTrue(vm.getDisplayedChanges().contains(c1));
+        assertTrue(vm.getDisplayedChanges().contains(c2));
+    }
 }

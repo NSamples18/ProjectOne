@@ -74,8 +74,8 @@ public class LoginPageController {
             stage.setTitle("Landing Page");
             stage.show();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 

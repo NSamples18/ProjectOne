@@ -3,103 +3,181 @@ package edu.westga.cs3211.AddStock.viewmodel;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import edu.westga.cs3211.LandingPage.model.Compartment;
 import edu.westga.cs3211.LandingPage.model.Condition;
 import edu.westga.cs3211.LandingPage.model.SpecialQualities;
+import edu.westga.cs3211.LandingPage.model.StorageCompartments;
 import edu.westga.cs3211.LandingPage.model.Stock;
+import edu.westga.cs3211.User.model.User;
+import edu.westga.cs3211.User.model.UserRole;
+import edu.westga.cs3211.inventory.InventoryService;
 
-public class AddStockViewModelTest {
+class AddStockViewModelTest {
 
-    private AddStockViewModel viewModel;
+    private AddStockViewModel vm;
 
     @BeforeEach
-    public void setup() {
-        this.viewModel = new AddStockViewModel();
+    void setup() {
+        vm = new AddStockViewModel();
+
+        InventoryService.getInstance().getStockChangesInternal().clear();
     }
 
     @Test
-    public void testBuildStockNonPerishableNoExpiration() {
-        this.viewModel.nameProperty().set("Rope");
-        this.viewModel.sizeProperty().set("10");
-        this.viewModel.specialProperty().set(SpecialQualities.FLAMMABLE);
-        this.viewModel.conditionProperty().set(Condition.USABLE);
-        this.viewModel.expirationProperty().set(null);
+    void testSetCurrentUserStoresUser() {
+        User user = new User("Bob", "bob123", UserRole.Crew);
+        vm.setCurrentUser(user);
 
-        Stock stock = this.viewModel.buildStockOrNull();
+        Stock s = new Stock(5, "Test", SpecialQualities.NONE, Condition.PERFECT, LocalDate.now());
+        Compartment c = InventoryService.getInstance()
+                .findCompatibleCompartments(s).get(0);
 
-        assertNotNull(stock);
-        assertEquals(10, stock.getSize());
-        assertEquals("Rope", stock.getName());
-        assertEquals(SpecialQualities.FLAMMABLE, stock.getSpecialQuals());
-        assertNull(stock.getExpirationDate());
+        vm.addStockToCompartment(s, c);
+
+        var changes = InventoryService.getInstance().getStockChangesInternal();
+
+        assertEquals(user, changes.get(0).getUser());
     }
 
     @Test
-    public void testBuildStockPerishableRequiresExpiration() {
-        this.viewModel.nameProperty().set("Meat");
-        this.viewModel.sizeProperty().set("5");
-        this.viewModel.specialProperty().set(SpecialQualities.PERISHABLE);
-        this.viewModel.conditionProperty().set(Condition.PERFECT);
+    void testBuildStockOrNullFailsOnBlankName() {
+        vm.nameProperty().set("");
+        vm.sizeProperty().set("10");
+        vm.conditionProperty().set(Condition.PERFECT);
+        vm.specialProperty().set(SpecialQualities.NONE);
 
-        // No expiration provided
-        this.viewModel.expirationProperty().set(null);
-
-        Stock stock = this.viewModel.buildStockOrNull();
-        assertNull(stock);
+        assertNull(vm.buildStockOrNull());
     }
 
     @Test
-    public void testBuildStockPerishableWithExpiration() {
-        this.viewModel.nameProperty().set("Milk");
-        this.viewModel.sizeProperty().set("3");
-        this.viewModel.specialProperty().set(SpecialQualities.PERISHABLE);
-        this.viewModel.conditionProperty().set(Condition.USABLE);
-        this.viewModel.expirationProperty().set(LocalDate.of(2025, 1, 1));
+    void testBuildStockOrNullFailsOnNullName() {
+        vm.nameProperty().set(null);
+        vm.sizeProperty().set("10");
+        vm.conditionProperty().set(Condition.PERFECT);
+        vm.specialProperty().set(SpecialQualities.NONE);
 
-        Stock stock = this.viewModel.buildStockOrNull();
-
-        assertNotNull(stock);
-        assertEquals("Milk", stock.getName());
-        assertEquals(SpecialQualities.PERISHABLE, stock.getSpecialQuals());
-        assertEquals(LocalDate.of(2025, 1, 1), stock.getExpirationDate());
+        assertNull(vm.buildStockOrNull());
     }
 
     @Test
-    public void testBuildStockInvalidSizeNonNumeric() {
-        this.viewModel.nameProperty().set("Oil");
-        this.viewModel.sizeProperty().set("x10");
-        this.viewModel.specialProperty().set(SpecialQualities.LIQUID);
-        this.viewModel.conditionProperty().set(Condition.USABLE);
+    void testBuildStockOrNullFailsOnNonNumericSize() {
+        vm.nameProperty().set("Test");
+        vm.sizeProperty().set("abc");
+        vm.conditionProperty().set(Condition.PERFECT);
+        vm.specialProperty().set(SpecialQualities.NONE);
 
-        Stock stock = this.viewModel.buildStockOrNull();
-        assertNull(stock);
+        assertNull(vm.buildStockOrNull());
     }
 
     @Test
-    public void testCanSubmitNonPerishableNoExpiration() {
-        this.viewModel.nameProperty().set("Wire");
-        this.viewModel.sizeProperty().set("2");
-        this.viewModel.specialProperty().set(SpecialQualities.FLAMMABLE);
-        this.viewModel.conditionProperty().set(Condition.PERFECT);
+    void testBuildStockOrNullFailsOnNegativeSize() {
+        vm.nameProperty().set("Test");
+        vm.sizeProperty().set("-5");  
+        vm.conditionProperty().set(Condition.PERFECT);
+        vm.specialProperty().set(SpecialQualities.NONE);
 
-        assertTrue(this.viewModel.canSubmitProperty().get());
+        assertNull(vm.buildStockOrNull());
     }
 
     @Test
-    public void testCanSubmitPerishableRequiresExpiration() {
-        this.viewModel.nameProperty().set("Veggies");
-        this.viewModel.sizeProperty().set("4");
-        this.viewModel.specialProperty().set(SpecialQualities.PERISHABLE);
-        this.viewModel.conditionProperty().set(Condition.USABLE);
+    void testBuildStockOrNullFailsOnPerishableWithoutExpiration() {
+        vm.nameProperty().set("Milk");
+        vm.sizeProperty().set("5");
+        vm.conditionProperty().set(Condition.PERFECT);
+        vm.specialProperty().set(SpecialQualities.PERISHABLE);
+        vm.expirationProperty().set(null);
 
-        // No expiration → should NOT allow submit
-        assertFalse(this.viewModel.canSubmitProperty().get());
+        assertNull(vm.buildStockOrNull());
+    }
 
-        // Add expiration → now can submit
-        this.viewModel.expirationProperty().set(LocalDate.now());
-        assertTrue(this.viewModel.canSubmitProperty().get());
+    @Test
+    void testBuildStockOrNullCreatesValidNonPerishableStock() {
+        vm.nameProperty().set("Rope");
+        vm.sizeProperty().set("10");
+        vm.conditionProperty().set(Condition.USABLE);
+        vm.specialProperty().set(SpecialQualities.NONE);
+        vm.expirationProperty().set(null); 
+        Stock s = vm.buildStockOrNull();
+
+        assertNotNull(s);
+        assertEquals("Rope", s.getName());
+        assertEquals(10, s.getSize());
+        assertEquals(Condition.USABLE, s.getCondition());
+        assertEquals(SpecialQualities.NONE, s.getSpecialQuals());
+    }
+
+    @Test
+    void testBuildStockOrNullCreatesValidPerishableStock() {
+        LocalDate exp = LocalDate.now().plusDays(3);
+
+        vm.nameProperty().set("Milk");
+        vm.sizeProperty().set("3");
+        vm.conditionProperty().set(Condition.PERFECT);
+        vm.specialProperty().set(SpecialQualities.PERISHABLE);
+        vm.expirationProperty().set(exp);
+
+        Stock s = vm.buildStockOrNull();
+
+        assertNotNull(s);
+        assertEquals("Milk", s.getName());
+        assertEquals(3, s.getSize());
+        assertEquals(SpecialQualities.PERISHABLE, s.getSpecialQuals());
+        assertEquals(exp, s.getExpirationDate());
+    }
+
+    @Test
+    void testLoadCompatibleCompartmentsPopulatesList() {
+        Stock s = new Stock(5, "Test", SpecialQualities.NONE, Condition.PERFECT, LocalDate.now());
+
+        vm.loadCompatibleCompartments(s);
+
+        List<Compartment> expected = InventoryService.getInstance()
+                .findCompatibleCompartments(s);
+
+        assertEquals(expected.size(), vm.getAvailableCompartments().size());
+    }
+
+    @Test
+    void testGetAvailableCompartmentsInitiallyEmpty() {
+        assertTrue(vm.getAvailableCompartments().isEmpty());
+    }
+
+    @Test
+    void testSelectedCompartmentSetAndGet() {
+        Compartment c = new Compartment(
+                new Stock(0, "Empty", SpecialQualities.NONE, Condition.PERFECT, LocalDate.now()),
+                StorageCompartments.WOODBARREL,
+                100
+        );
+
+        vm.setSelectedCompartment(c);
+
+        assertEquals(c, vm.getSelectedCompartment());
+        assertEquals(c, vm.selectedCompartmentProperty().get());
+    }
+
+    @Test
+    void testAddStockToCompartmentCreatesLogEntry() {
+        User user = new User("Alice", "a1", UserRole.Crew);
+        vm.setCurrentUser(user);
+
+        Stock s = new Stock(5, "Food", SpecialQualities.NONE, Condition.PERFECT, LocalDate.now());
+        Compartment c = InventoryService.getInstance()
+                .findCompatibleCompartments(s)
+                .get(0);
+
+        vm.addStockToCompartment(s, c);
+
+        var logs = InventoryService.getInstance().getStockChangesInternal();
+
+        assertEquals(1, logs.size());
+        assertEquals(user, logs.get(0).getUser());
+        assertEquals(s, logs.get(0).getStock());
+        assertEquals(c, logs.get(0).getCompartment());
     }
 }

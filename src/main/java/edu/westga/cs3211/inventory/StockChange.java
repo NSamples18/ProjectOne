@@ -13,7 +13,7 @@ import edu.westga.cs3211.User.model.User;
  */
 public class StockChange {
 
-    private final User crewMate;
+    private final User user;
     private final Stock stock;
     private final Compartment compartment;
     private final int remainingCapacity;
@@ -22,16 +22,16 @@ public class StockChange {
     /**
      * Creates a new StockChange record.
      *
-     * @param crewMate the user who added the stock
+     * @param user the user who added the stock
      * @param stock the added stock
      * @param compartment the compartment used to store stock
      * @param remainingCapacity capacity left in the compartment after adding stock
      * @param timestamp the time the stock was added
      */
-    public StockChange(User crewMate, Stock stock, Compartment compartment,
+    public StockChange(User user, Stock stock, Compartment compartment,
                        int remainingCapacity, LocalDateTime timestamp) {
 
-        this.crewMate = crewMate;
+        this.user = user;
         this.stock = stock;
         this.compartment = compartment;
         this.remainingCapacity = remainingCapacity;
@@ -43,8 +43,8 @@ public class StockChange {
      *
      * @return the user
      */
-    public User getCrewMate() {
-        return this.crewMate;
+    public User getUser() {
+        return this.user;
     }
 
     /**

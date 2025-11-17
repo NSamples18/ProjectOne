@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import edu.westga.cs3211.AddStock.view.AddStockController;
 import edu.westga.cs3211.LandingPage.viewmodel.LandingPageViewModel;
+import edu.westga.cs3211.ReviewStock.view.ReviewStockController;
 import edu.westga.cs3211.User.model.User;
 import edu.westga.cs3211.User.model.UserRole;
 import javafx.fxml.FXML;
@@ -71,10 +72,26 @@ public class LandingPageCodeBehind {
         }
     }
 
-
     @FXML
     private void handleViewStock() {
-        System.out.println("View Stock clicked");
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/edu/westga/cs3211/ProjectOne/view/ReviewStockPage.fxml")
+            );
+
+            Parent root = loader.load();
+
+            ReviewStockController controller = loader.getController();
+            controller.init(this.currentUser);
+
+            Stage stage = (Stage) this.viewStockButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Review Stock");
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

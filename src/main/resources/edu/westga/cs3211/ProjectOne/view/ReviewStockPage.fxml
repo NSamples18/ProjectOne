@@ -1,9 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<?import javafx.scene.layout.AnchorPane?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.westga.cs3211.ReviewStock.view.ReviewStockController"
+            prefWidth="800" prefHeight="600">
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1"
-			fx:controller="edu.westga.cs3211.ViewStock.view.ViewStockChangesController">
-	<!-- TODO Add Nodes -->
-</AnchorPane>
+    <top>
+        <HBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
 
+            <Button text="Home" onAction="#handleHome"/>
+            <Button text="Logout" onAction="#handleLogout"/>
+
+            <Pane HBox.hgrow="ALWAYS"/> <!-- spacer -->
+
+            <ComboBox fx:id="crewFilter" promptText="Filter by CrewMate"/>
+            <ComboBox fx:id="specialFilter" promptText="Filter by Special Quality"/>
+            <DatePicker fx:id="startDateFilter"/>
+            <DatePicker fx:id="endDateFilter"/>
+
+            <Button text="Apply Filters" onAction="#handleApplyFilters"/>
+            <Button text="Reset" onAction="#handleResetFilters"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TableView fx:id="changesTable">
+            <columns>
+                <TableColumn fx:id="userCol" text="CrewMate"/>
+                <TableColumn fx:id="stockCol" text="Stock"/>
+                <TableColumn fx:id="compartmentCol" text="Compartment"/>
+                <TableColumn fx:id="remainingCol" text="Remaining Space"/>
+                <TableColumn fx:id="timeCol" text="Time"/>
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>

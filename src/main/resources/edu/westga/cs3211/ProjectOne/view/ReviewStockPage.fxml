@@ -8,37 +8,45 @@
             fx:controller="edu.westga.cs3211.ReviewStock.view.ReviewStockController"
             prefWidth="1000" prefHeight="600">
 
-    <top>
+     <top>
         <HBox spacing="10">
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
 
+            <!-- Left side -->
             <Button text="Home" onAction="#handleHome"/>
+            <Button text="Add Stock" onAction="#handleAddStock"/>
+
+            <!-- Flexible spacer pushes Logout to the right -->
+            <Pane HBox.hgrow="ALWAYS"/>
+
+            <!-- Logout -->
             <Button text="Logout" onAction="#handleLogout"/>
-
-            <Pane HBox.hgrow="ALWAYS"/> <!-- spacer -->
-
-            <ComboBox fx:id="crewFilter" promptText="Filter by CrewMate"/>
-            <ComboBox fx:id="specialFilter" promptText="Filter by Special Quality"/>
-            <DatePicker fx:id="startDateFilter" promptText="Start Date"/>
-            <DatePicker fx:id="endDateFilter" promptText="End Date"/>
-
-            <Button text="Apply Filters" onAction="#handleApplyFilters"/>
-            <Button text="Reset" onAction="#handleResetFilters"/>
         </HBox>
     </top>
 
     <center>
-        <TableView fx:id="changesTable">
-            <columns>
-                <TableColumn fx:id="userCol" text="CrewMate"/>
-                <TableColumn fx:id="stockCol" text="Stock"/>
-                <TableColumn fx:id="compartmentCol" text="Compartment"/>
-                <TableColumn fx:id="remainingCol" text="Remaining Space"/>
-                <TableColumn fx:id="timeCol" text="Time"/>
-            </columns>
-        </TableView>
+        <VBox spacing="10">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ComboBox fx:id="crewFilter" promptText="Filter by CrewMate"/>
+                <ComboBox fx:id="specialFilter" promptText="Filter by Special Quality"/>
+                <DatePicker fx:id="startDateFilter" promptText="Start Date"/>
+                <DatePicker fx:id="endDateFilter" promptText="End Date"/>
+                <Button text="Apply Filters" onAction="#handleApplyFilters"/>
+                <Button text="Reset" onAction="#handleResetFilters"/>
+            </HBox>
+
+            <TableView fx:id="changesTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="userCol" text="CrewMate"/>
+                    <TableColumn fx:id="stockCol" text="Stock"/>
+                    <TableColumn fx:id="compartmentCol" text="Compartment"/>
+                    <TableColumn fx:id="remainingCol" text="Remaining Space"/>
+                    <TableColumn fx:id="timeCol" text="Time"/>
+                </columns>
+            </TableView>
+        </VBox>
     </center>
 
 </BorderPane>

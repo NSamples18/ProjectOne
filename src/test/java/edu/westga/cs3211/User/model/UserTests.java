@@ -1,4 +1,4 @@
-package edu.westga.cs3211.model.person;
+package edu.westga.cs3211.User.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;

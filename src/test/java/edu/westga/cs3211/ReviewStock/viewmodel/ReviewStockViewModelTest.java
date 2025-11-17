@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,132 +12,165 @@ import org.junit.jupiter.api.Test;
 import edu.westga.cs3211.LandingPage.model.Compartment;
 import edu.westga.cs3211.LandingPage.model.Condition;
 import edu.westga.cs3211.LandingPage.model.SpecialQualities;
+import edu.westga.cs3211.LandingPage.model.StorageCompartments;
 import edu.westga.cs3211.LandingPage.model.Stock;
 import edu.westga.cs3211.User.model.User;
 import edu.westga.cs3211.User.model.UserRole;
 import edu.westga.cs3211.inventory.InventoryService;
 import edu.westga.cs3211.inventory.StockChange;
 
-public class ReviewStockViewModelTest {
+class ReviewStockViewModelTest {
 
-    private ReviewStockViewModel viewModel;
+    private InventoryService service;
 
-    private User userHaynes;
-    private User userBrent;
+    private User userA;
+    private User userB;
 
-    private Stock nonPerishableStock;
+    private Compartment barrel;
+    private Compartment fridge;
+
+    private Stock noneStock;
     private Stock perishableStock;
-
-    private Compartment normalComp;
-    private Compartment perishableComp;
-
-    private LocalDateTime t1;
-    private LocalDateTime t2;
-    private LocalDateTime t3;
 
     @BeforeEach
     void setup() {
-
-        this.viewModel = new ReviewStockViewModel();
-        InventoryService service = InventoryService.getInstance();
+        service = InventoryService.getInstance();
         service.getStockChangesInternal().clear();
 
-        this.userHaynes = new User("Haynes", "pw", UserRole.Crew);
-        this.userBrent = new User("Brent", "pw", UserRole.Quartermaster);
+        userA = new User("Alice", "alice", UserRole.Crew);
+        userB = new User("Bob", "bob", UserRole.Crew);
 
-        this.nonPerishableStock = new Stock(
-            5, "Canned Beans", SpecialQualities.NONE, Condition.PERFECT, null
-        );
+        barrel = service.getInventory().getCompartments().stream()
+                .filter(c -> c.getCompartmentType() == StorageCompartments.WOODBARREL)
+                .findFirst().orElseThrow();
 
-        this.perishableStock = new Stock(
-            3, "Milk", SpecialQualities.PERISHABLE, Condition.PERFECT, LocalDate.now().plusDays(7)
-        );
+        fridge = service.getInventory().getCompartments().stream()
+                .filter(c -> c.getCompartmentType() == StorageCompartments.FRIDGE)
+                .findFirst().orElseThrow();
 
-        Stock dummyNone = new Stock(0, "dummy-none", SpecialQualities.NONE, Condition.PERFECT, null);
-        Stock dummyPer = new Stock(0, "dummy-per", SpecialQualities.PERISHABLE, Condition.PERFECT, null);
+        noneStock = new Stock(5, "Rope", SpecialQualities.NONE, Condition.PERFECT, LocalDate.now());
+        perishableStock = new Stock(3, "Milk", SpecialQualities.PERISHABLE, Condition.USABLE, LocalDate.now());
+    }
 
-//        this.normalComp = new Compartment(dummyNone, "NONE", 100);
-//        this.perishableComp = new Compartment(dummyPer, "PERISHABLE", 100);
+    private StockChange makeChange(User user, Stock stock, Compartment comp, LocalDateTime time) {
+        StockChange change = new StockChange(user, stock, comp, 50, time);
+        service.getStockChangesInternal().add(change);
+        return change;
+    }
 
-        this.t1 = LocalDateTime.now().minusDays(2);
-        this.t2 = LocalDateTime.now().minusDays(1);
-        this.t3 = LocalDateTime.now();
+    @Test
+    void testConstructorLoadsAndSortsChanges() {
+        // Newest first is expected
+        StockChange c1 = makeChange(userA, noneStock, barrel, LocalDateTime.now().minusDays(1));
+        StockChange c2 = makeChange(userB, noneStock, barrel, LocalDateTime.now());
 
-        service.getStockChangesInternal().add(new StockChange(
-            this.userHaynes, this.nonPerishableStock, this.normalComp, 95, this.t1
-        ));
+        ReviewStockViewModel vm = new ReviewStockViewModel();
 
-        service.getStockChangesInternal().add(new StockChange(
-            this.userBrent, this.perishableStock, this.perishableComp, 97, this.t2
-        ));
+        List<StockChange> displayed = vm.getDisplayedChanges();
 
-        service.getStockChangesInternal().add(new StockChange(
-            this.userHaynes, this.perishableStock, this.perishableComp, 90, this.t3
-        ));
+        assertEquals(2, displayed.size());
+        assertEquals(c2, displayed.get(0));
+        assertEquals(c1, displayed.get(1));
+    }
 
-        this.viewModel.loadAllChanges();
+    @Test
+    void testCrewFilterWorks() {
+        StockChange c1 = makeChange(userA, noneStock, barrel, LocalDateTime.now());
+        makeChange(userB, noneStock, barrel, LocalDateTime.now());
+
+        ReviewStockViewModel vm = new ReviewStockViewModel();
+
+        vm.crewFilterProperty().set(userA);
+        vm.applyFilters();
+
+        assertEquals(1, vm.getDisplayedChanges().size());
+        assertEquals(c1, vm.getDisplayedChanges().get(0));
     }
 
 
     @Test
-    void testLoadAllChangesSortedNewestFirst() {
-        assertEquals(3, this.viewModel.getDisplayedChanges().size());
-        assertEquals(this.t3, this.viewModel.getDisplayedChanges().get(0).getTimestamp());
-        assertEquals(this.t2, this.viewModel.getDisplayedChanges().get(1).getTimestamp());
-        assertEquals(this.t1, this.viewModel.getDisplayedChanges().get(2).getTimestamp());
+    void testSpecialFilterWorks() {
+        StockChange c1 = makeChange(userA, perishableStock, fridge, LocalDateTime.now());
+        makeChange(userA, noneStock, barrel, LocalDateTime.now());
+
+        ReviewStockViewModel vm = new ReviewStockViewModel();
+
+        vm.specialFilterProperty().set(SpecialQualities.PERISHABLE);
+        vm.applyFilters();
+
+        assertEquals(1, vm.getDisplayedChanges().size());
+        assertEquals(c1, vm.getDisplayedChanges().get(0));
     }
 
     @Test
-    void testFilterBySpecialQuality() {
-        this.viewModel.specialFilterProperty().set(SpecialQualities.PERISHABLE);
-        this.viewModel.applyFilters();
+    void testStartDateFilterWorks() {
+        StockChange newC = makeChange(userA, noneStock, barrel, LocalDateTime.now());
 
-        assertEquals(2, this.viewModel.getDisplayedChanges().size());
-        assertTrue(this.viewModel.getDisplayedChanges()
-            .stream()
-            .allMatch(sc -> sc.getStock().getSpecialQuals() == SpecialQualities.PERISHABLE));
+        ReviewStockViewModel vm = new ReviewStockViewModel();
+
+        vm.startDateFilterProperty().set(LocalDate.now().minusDays(2));
+        vm.applyFilters();
+
+        assertEquals(1, vm.getDisplayedChanges().size());
+        assertEquals(newC, vm.getDisplayedChanges().get(0));
     }
 
     @Test
-    void testFilterByCrewMate() {
-        this.viewModel.crewFilterProperty().set(this.userBrent);
-        this.viewModel.applyFilters();
+    void testEndDateFilterWorks() {
+        StockChange earlyC = makeChange(userA, noneStock, barrel, LocalDateTime.now().minusDays(5));
+        makeChange(userA, noneStock, barrel, LocalDateTime.now());
 
-        assertEquals(1, this.viewModel.getDisplayedChanges().size());
-        assertEquals("Brent", this.viewModel.getDisplayedChanges().get(0).getUser().getName());
+        ReviewStockViewModel vm = new ReviewStockViewModel();
+
+        vm.endDateFilterProperty().set(LocalDate.now().minusDays(3));
+        vm.applyFilters();
+
+        assertEquals(1, vm.getDisplayedChanges().size());
+        assertEquals(earlyC, vm.getDisplayedChanges().get(0));
     }
 
     @Test
-    void testFilterByValidTimeRange() {
+    void testInvalidDateRangeThrows() {
+        ReviewStockViewModel vm = new ReviewStockViewModel();
 
-        this.viewModel.startDateFilterProperty().set(LocalDate.now().minusDays(1));
-        this.viewModel.endDateFilterProperty().set(LocalDate.now());
+        vm.startDateFilterProperty().set(LocalDate.now());
+        vm.endDateFilterProperty().set(LocalDate.now().minusDays(1));
 
-        this.viewModel.applyFilters();
-
-        assertEquals(2, this.viewModel.getDisplayedChanges().size());
-        assertTrue(this.viewModel.getDisplayedChanges()
-            .stream()
-            .allMatch(sc -> sc.getTimestamp().toLocalDate().isAfter(LocalDate.now().minusDays(2))));
+        assertThrows(IllegalArgumentException.class, vm::applyFilters);
     }
 
-    @Test
-    void testFilterByInvalidTimeRange() {
-        this.viewModel.startDateFilterProperty().set(LocalDate.now());
-        this.viewModel.endDateFilterProperty().set(LocalDate.now().minusDays(1));
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            this.viewModel.applyFilters();
-        });
+    @Test
+    void testMultipleFiltersTogether() {
+        StockChange match = makeChange(userA, perishableStock, fridge, LocalDateTime.now());
+        makeChange(userA, noneStock, barrel, LocalDateTime.now());
+        makeChange(userB, perishableStock, fridge, LocalDateTime.now());
+
+        ReviewStockViewModel vm = new ReviewStockViewModel();
+
+        vm.crewFilterProperty().set(userA);
+        vm.specialFilterProperty().set(SpecialQualities.PERISHABLE);
+
+        vm.applyFilters();
+
+        assertEquals(1, vm.getDisplayedChanges().size());
+        assertEquals(match, vm.getDisplayedChanges().get(0));
     }
 
-    @Test
-    void testClearFilters() {
-        this.viewModel.specialFilterProperty().set(SpecialQualities.PERISHABLE);
-        this.viewModel.applyFilters();
-        assertEquals(2, this.viewModel.getDisplayedChanges().size());
 
-        this.viewModel.clearFilters();
-        assertEquals(3, this.viewModel.getDisplayedChanges().size());
+    @Test
+    void testClearFiltersRestoresAllChanges() {
+        makeChange(userA, noneStock, barrel, LocalDateTime.now());
+        makeChange(userA, perishableStock, fridge, LocalDateTime.now());
+
+        ReviewStockViewModel vm = new ReviewStockViewModel();
+
+        vm.crewFilterProperty().set(userA);
+        vm.specialFilterProperty().set(SpecialQualities.PERISHABLE);
+        vm.applyFilters();
+        assertEquals(1, vm.getDisplayedChanges().size());
+
+        vm.clearFilters();
+        assertEquals(2, vm.getDisplayedChanges().size());
     }
 }

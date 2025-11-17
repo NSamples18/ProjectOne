@@ -38,7 +38,6 @@ public class LandingPageCodeBehind {
 
     @FXML
     private void initialize() {
-        // Bind UI → ViewModel
         this.greetingLabel.textProperty().bind(this.viewModel.greetingProperty());
         this.viewStockButton.visibleProperty().bind(this.viewModel.viewStockVisibleProperty());
     }

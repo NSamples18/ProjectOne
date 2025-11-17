@@ -69,7 +69,7 @@ public class Authenticator {
      */
     public User getUserIfValid(String name, String password) {
         for (User user : this.users) {
-            if (this.verify(user.getName(), user.getPassword())) {
+            if (user.getName().equals(name) && user.getPassword().equals(password)) {
                 return user;
             }
         }

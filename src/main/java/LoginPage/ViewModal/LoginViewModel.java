@@ -1,95 +1,72 @@
 package LoginPage.ViewModal;
 
-import edu.westga.cs3211.User.model.Authenticator;
+import edu.westga.cs3211.User.model.User;
 import edu.westga.cs3211.User.model.UserRole;
+import edu.westga.cs3211.User.model.Authenticator;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 /**
- * ViewModel for the login screen. 
- * @author ns00184
- * @version Fall 2025
+ * ViewModel for the Login page.
+ * MVVM-correct version: does NOT expose User objects.
  */
 public class LoginViewModel {
 
-    private final StringProperty username;
-    private final StringProperty password;
+    private StringProperty username;
+    private StringProperty password;
 
-    private final Authenticator authenticator;
+    private StringProperty loggedInUsername;   // what we expose to other screens
+    private ObjectProperty<UserRole> loggedInRole;
+
+    private Authenticator authenticator;
 
     /**
-     * Creates a new LoginViewModel.
-     * 
-     * @precondition none
-     * @postcondition username and password are empty strings
+     * Creates the LoginViewModel.
      */
     public LoginViewModel() {
         this.username = new SimpleStringProperty("");
         this.password = new SimpleStringProperty("");
+
+        this.loggedInUsername = new SimpleStringProperty("");
+        this.loggedInRole = new SimpleObjectProperty<>(null);
+
         this.authenticator = new Authenticator();
     }
 
-    /**
-     * Returns the username property.
-     * 
-     * @return the username StringProperty
-     */
     public StringProperty usernameProperty() {
         return this.username;
     }
 
-    /**
-     * Returns the password property.
-     * 
-     * @return the password StringProperty
-     */
     public StringProperty passwordProperty() {
         return this.password;
     }
 
-    /**
-     * Determines whether both username and password fields contain
-     * non-empty values.
-     * 
-     * @return true if both fields are filled
-     */
-    public boolean canLogin() {
-        return !this.username.get().trim().isEmpty()
-            && !this.password.get().trim().isEmpty();
+    public StringProperty loggedInUsernameProperty() {
+        return this.loggedInUsername;
+    }
+
+    public ObjectProperty<UserRole> loggedInRoleProperty() {
+        return this.loggedInRole;
     }
 
     /**
-     * Attempts to log the user in by verifying the username and password
-     * with the Authenticator model.
-     * 
-     * @return true if login succeeds, false otherwise
-     * 
-     * @precondition canLogin() == true
-     * @postcondition none
+     * Attempts login using the authenticator.
+     * @return 
      */
     public boolean login() {
-        return this.authenticator.verify(
-            this.username.get(),
-            this.password.get()
+        User user = this.authenticator.getUserIfValid(
+                this.username.get(),
+                this.password.get()
         );
-    }
-    
-    /**
-     * gets the user name
-     * @return the user name.
-     */
-    public String getUserName() {
-        return this.username.get();
-    }
-    
-    /**
-     * gets the current user role.
-     * @return the users role.
-     */
-    public UserRole getUserRole() {
-        return this.authenticator.getUserRole(this.username.get());
-    }
 
+        if (user != null) {
+            this.loggedInUsername.set(user.getName());
+            this.loggedInRole.set(user.getRole());
+            return true;
+        }
+
+        return false;
+    }
 }
-
-

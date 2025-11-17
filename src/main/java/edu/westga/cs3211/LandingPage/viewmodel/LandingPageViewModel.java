@@ -1,87 +1,32 @@
 package edu.westga.cs3211.LandingPage.viewmodel;
 
-import edu.westga.cs3211.User.model.User;
+import edu.westga.cs3211.User.model.UserRole;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- * The Class ViewModel.
- * 
- * @author CS 3211
- * @version Fall 2025
- */
-
 public class LandingPageViewModel {
 
-	private StringProperty greetingProperty;
-	private StringProperty nameProperty;
-	private StringProperty allNamesProperty;
+    private StringProperty greeting;
+    private BooleanProperty viewStockVisible;
 
-	/**
-	 * Instantiates a new greeting view model.
-	 */
-	public LandingPageViewModel() {
+    public LandingPageViewModel() {
+        this.greeting = new SimpleStringProperty("");
+        this.viewStockVisible = new SimpleBooleanProperty(false);
+    }
 
-		this.greetingProperty = new SimpleStringProperty("Hello, World!");
-		this.nameProperty = new SimpleStringProperty("");
-		this.allNamesProperty = new SimpleStringProperty("");
-	}
+    public StringProperty greetingProperty() {
+        return this.greeting;
+    }
 
-	/**
-	 * Gets the greeting property.
-	 *
-	 * @return the greeting Property.
-	 */
-	public StringProperty greetingProperty() {
-		return this.greetingProperty;
-	}
+    public BooleanProperty viewStockVisibleProperty() {
+        return this.viewStockVisible;
+    }
 
-	/**
-	 * Gets the name property.
-	 *
-	 * @return the nameProperty
-	 */
-	public StringProperty nameProperty() {
-		return this.nameProperty;
-	}
+    public void initialize(String username, UserRole role) {
+        this.greeting.set("Hello, " + username + "!");
 
-	/**
-	 * Gets the allNamesProperty.
-	 *
-	 * @return the allNamesProperty
-	 */
-	public StringProperty allNamesProperty() {
-		return this.allNamesProperty;
-	}
-	/**
-	 * Say greetings.
-	 * 
-	 * @precondition: none
-	 * @postcondition: the greeting label has text "Hello, xxx!" where xxx is what
-	 *                 the user entered in the nameTextfield and nameTextField is
-	 *                 set to empty. If the user didn't enter any name, returns.
-	 * 
-	 */
-
-	public void sayGreeting() {
-
-		String name = this.nameProperty.getValue();
-		if (!name.isEmpty()) {
-			this.greetingProperty.setValue("Hello! ");
-
-			if (this.allNamesProperty.getValue().isEmpty()) {
-				this.allNamesProperty.setValue(name);
-			} else {
-				this.allNamesProperty.setValue(this.allNamesProperty.getValue() 
-						+ System.lineSeparator() + name);
-			}
-			// this sets the viewModel's nameProperty to empty
-			// since it's bi-directionally bound to the codebehind's
-			// nameTextField.textProperty
-			// it will set nameTextField to empty.
-			this.nameProperty.setValue("");
-		}
-
-	}
-
+        this.viewStockVisible.set(role == UserRole.Quartermaster);
+    }
 }

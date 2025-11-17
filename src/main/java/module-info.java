@@ -6,6 +6,7 @@ module edu.westga.cs3211.ProjectOne {
     opens LoginPage.View to javafx.fxml;
     opens edu.westga.cs3211.LandingPage.view to javafx.fxml;
     opens edu.westga.cs3211.ProjectOne to javafx.fxml;
+    opens edu.westga.cs3211.AddStock.view to javafx.fxml;
 
     exports LoginPage.View;
     exports LoginPage.ViewModal;

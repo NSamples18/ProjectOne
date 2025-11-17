@@ -45,8 +45,8 @@ public class Authenticator {
     
     /**
      * 
-     * @param name
-     * @param password
+     * @param name the usernames
+     * @param password the password
      * @return verifies if the creds a valid.
      */
     public boolean verify(String name, String password) {
@@ -57,6 +57,22 @@ public class Authenticator {
            }
         }
         return false;
+    }
+    
+    /**
+     * Returns the User object if username + password match.
+     *
+     * @param name the username
+     * @param password the password
+     * @return matching User or null
+     */
+    public User getUserIfValid(String name, String password) {
+        for (User user : this.users) {
+            if (this.verify(user.getName(), user.getPassword())) {
+                return user;
+            }
+        }
+        return null;
     }
 
 

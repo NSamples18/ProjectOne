@@ -136,13 +136,16 @@ public final class InventoryService {
      */
     public void addStockToCompartment(User user, Stock stock, Compartment compartment) {
 
-        int remainingCapacity = compartment.getFreeSpace() - stock.getSize();
+        compartment.setStock(stock);
+
+        int remaining = compartment.getFreeSpace();
+
         StockChange change = new StockChange(
-                user,
-                stock,
-                compartment,
-                remainingCapacity,
-                LocalDateTime.now()
+            user,
+            stock,
+            compartment,
+            remaining,
+            LocalDateTime.now()
         );
 
         this.stockChanges.add(change);

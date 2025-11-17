@@ -6,7 +6,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="edu.westga.cs3211.LoginPage.View.LoginPageController">
+            fx:controller="edu.westga.cs3211.LoginPage.View.LoginPageController"
+            prefWidth="400" prefHeight="250">
 
     <children>
         <TextField fx:id="usernameField"

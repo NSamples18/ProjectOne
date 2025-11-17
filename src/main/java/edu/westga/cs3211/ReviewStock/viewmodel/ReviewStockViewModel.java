@@ -97,40 +97,49 @@ public class ReviewStockViewModel {
      * @postcondition displayedChanges contains only matching entries
      */
     public void applyFilters() {
+
+        LocalDate start = this.startDateFilter.get();
+        LocalDate end = this.endDateFilter.get();
+
+        if (start != null && end != null && !end.isAfter(start)) {
+            throw new IllegalArgumentException("End date must be after start date.");
+        }
+
         List<StockChange> filtered = this.inventoryService.getStockChanges();
 
         if (this.crewFilter.get() != null) {
             filtered = filtered.stream()
-                .filter(change -> change.getUser().equals(this.crewFilter.get()))
-                .collect(Collectors.toList());
+                    .filter(change -> change.getUser().equals(this.crewFilter.get()))
+                    .collect(Collectors.toList());
         }
 
         if (this.specialFilter.get() != null) {
             filtered = filtered.stream()
-                .filter(change -> change.getStock().getSpecialQuals() == this.specialFilter.get())
-                .collect(Collectors.toList());
+                    .filter(change -> change.getStock().getSpecialQuals() == this.specialFilter.get())
+                    .collect(Collectors.toList());
         }
 
-        if (this.startDateFilter.get() != null) {
+        if (start != null) {
             filtered = filtered.stream()
-                .filter(change -> change.getTimestamp().toLocalDate()
-                        .isAfter(this.startDateFilter.get().minusDays(1)))
-                .collect(Collectors.toList());
+                    .filter(change -> change.getTimestamp().toLocalDate()
+                            .isAfter(start.minusDays(1)))
+                    .collect(Collectors.toList());
         }
 
-        if (this.endDateFilter.get() != null) {
+        if (end != null) {
             filtered = filtered.stream()
-                .filter(change -> change.getTimestamp().toLocalDate()
-                        .isBefore(this.endDateFilter.get().plusDays(1)))
-                .collect(Collectors.toList());
+                    .filter(change -> change.getTimestamp().toLocalDate()
+                            .isBefore(end.plusDays(1)))
+                    .collect(Collectors.toList());
         }
 
         filtered = filtered.stream()
-            .sorted(SORT_BY_TIMESTAMP_DESC)
-            .collect(Collectors.toList());
+                .sorted((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()))
+                .collect(Collectors.toList());
 
         this.displayedChanges.setAll(filtered);
     }
+
 
     /**
      * Clears all filters and reloads the complete change list.

@@ -1,7 +1,7 @@
 package edu.westga.cs3211.LandingPage.model;
 
 /**
- * defines the storeages.
+ * defines the storages.
  * @author ns00184
  * @version 2025
  */

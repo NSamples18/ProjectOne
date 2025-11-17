@@ -21,8 +21,8 @@
 
             <ComboBox fx:id="crewFilter" promptText="Filter by CrewMate"/>
             <ComboBox fx:id="specialFilter" promptText="Filter by Special Quality"/>
-            <DatePicker fx:id="startDateFilter"/>
-            <DatePicker fx:id="endDateFilter"/>
+            <DatePicker fx:id="startDateFilter" promptText="Start Date"/>
+            <DatePicker fx:id="endDateFilter" promptText="End Date"/>
 
             <Button text="Apply Filters" onAction="#handleApplyFilters"/>
             <Button text="Reset" onAction="#handleResetFilters"/>

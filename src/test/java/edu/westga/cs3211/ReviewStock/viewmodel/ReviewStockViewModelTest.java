@@ -1,5 +1,13 @@
 package edu.westga.cs3211.ReviewStock.viewmodel;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import edu.westga.cs3211.LandingPage.model.Compartment;
 import edu.westga.cs3211.LandingPage.model.Condition;
 import edu.westga.cs3211.LandingPage.model.SpecialQualities;
@@ -7,95 +15,128 @@ import edu.westga.cs3211.LandingPage.model.Stock;
 import edu.westga.cs3211.User.model.User;
 import edu.westga.cs3211.User.model.UserRole;
 import edu.westga.cs3211.inventory.InventoryService;
-import edu.westga.cs3211.inventory.InventoryServiceTestHelper;
 import edu.westga.cs3211.inventory.StockChange;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ReviewStockViewModelTest {
 
-    private User crew1;
-    private User crew2;
-    private Compartment generalCompartment;
-    private Stock foodStock;
-    private Stock flammableStock;
+    private ReviewStockViewModel viewModel;
+
+    private User userHaynes;
+    private User userBrent;
+
+    private Stock nonPerishableStock;
+    private Stock perishableStock;
+
+    private Compartment normalComp;
+    private Compartment perishableComp;
+
+    private LocalDateTime t1;
+    private LocalDateTime t2;
+    private LocalDateTime t3;
 
     @BeforeEach
-    public void setup() {
-        InventoryServiceTestHelper.resetService();
+    void setup() {
 
-        this.crew1 = new User("Alice", "p1", UserRole.Crew);
-        this.crew2 = new User("Bob", "p2", UserRole.Crew);
-
-        this.generalCompartment = new Compartment(
-            new Stock(1, "dummy", SpecialQualities.NONE, Condition.USABLE, null),
-            "NONE",
-            100
-        );
-
-        this.foodStock = new Stock(5, "Food Crate", SpecialQualities.PERISHABLE, Condition.PERFECT, null);
-        this.flammableStock = new Stock(3, "Fuel Tank", SpecialQualities.FLAMMABLE, Condition.USABLE, null);
-
+        this.viewModel = new ReviewStockViewModel();
         InventoryService service = InventoryService.getInstance();
+        service.getStockChangesInternal().clear();
 
-        service.getStockChanges().add(
-            new StockChange(crew1, foodStock, generalCompartment, 95, LocalDateTime.of(2025, 1, 1, 10, 0))
+        this.userHaynes = new User("Haynes", "pw", UserRole.Crew);
+        this.userBrent = new User("Brent", "pw", UserRole.Quartermaster);
+
+        this.nonPerishableStock = new Stock(
+            5, "Canned Beans", SpecialQualities.NONE, Condition.PERFECT, null
         );
 
-        service.getStockChanges().add(
-            new StockChange(crew2, flammableStock, generalCompartment, 97, LocalDateTime.of(2025, 1, 2, 9, 0))
+        this.perishableStock = new Stock(
+            3, "Milk", SpecialQualities.PERISHABLE, Condition.PERFECT, LocalDate.now().plusDays(7)
         );
+
+        Stock dummyNone = new Stock(0, "dummy-none", SpecialQualities.NONE, Condition.PERFECT, null);
+        Stock dummyPer = new Stock(0, "dummy-per", SpecialQualities.PERISHABLE, Condition.PERFECT, null);
+
+        this.normalComp = new Compartment(dummyNone, "NONE", 100);
+        this.perishableComp = new Compartment(dummyPer, "PERISHABLE", 100);
+
+        this.t1 = LocalDateTime.now().minusDays(2);
+        this.t2 = LocalDateTime.now().minusDays(1);
+        this.t3 = LocalDateTime.now();
+
+        service.getStockChangesInternal().add(new StockChange(
+            this.userHaynes, this.nonPerishableStock, this.normalComp, 95, this.t1
+        ));
+
+        service.getStockChangesInternal().add(new StockChange(
+            this.userBrent, this.perishableStock, this.perishableComp, 97, this.t2
+        ));
+
+        service.getStockChangesInternal().add(new StockChange(
+            this.userHaynes, this.perishableStock, this.perishableComp, 90, this.t3
+        ));
+
+        this.viewModel.loadAllChanges();
+    }
+
+
+    @Test
+    void testLoadAllChangesSortedNewestFirst() {
+        assertEquals(3, this.viewModel.getDisplayedChanges().size());
+        assertEquals(this.t3, this.viewModel.getDisplayedChanges().get(0).getTimestamp());
+        assertEquals(this.t2, this.viewModel.getDisplayedChanges().get(1).getTimestamp());
+        assertEquals(this.t1, this.viewModel.getDisplayedChanges().get(2).getTimestamp());
     }
 
     @Test
-    public void testFilterByCrew() {
-        ReviewStockViewModel vm = new ReviewStockViewModel();
+    void testFilterBySpecialQuality() {
+        this.viewModel.specialFilterProperty().set(SpecialQualities.PERISHABLE);
+        this.viewModel.applyFilters();
 
-        vm.crewFilterProperty().set(this.crew1);
-        vm.applyFilters();
-
-        assertEquals(1, vm.getDisplayedChanges().size());
-        assertEquals("Food Crate", vm.getDisplayedChanges().get(0).getStock().getName());
+        assertEquals(2, this.viewModel.getDisplayedChanges().size());
+        assertTrue(this.viewModel.getDisplayedChanges()
+            .stream()
+            .allMatch(sc -> sc.getStock().getSpecialQuals() == SpecialQualities.PERISHABLE));
     }
 
     @Test
-    public void testFilterBySpecialQuality() {
-        ReviewStockViewModel vm = new ReviewStockViewModel();
+    void testFilterByCrewMate() {
+        this.viewModel.crewFilterProperty().set(this.userBrent);
+        this.viewModel.applyFilters();
 
-        vm.specialFilterProperty().set(SpecialQualities.FLAMMABLE);
-        vm.applyFilters();
-
-        assertEquals(1, vm.getDisplayedChanges().size());
-        assertEquals("Fuel Tank", vm.getDisplayedChanges().get(0).getStock().getName());
+        assertEquals(1, this.viewModel.getDisplayedChanges().size());
+        assertEquals("Brent", this.viewModel.getDisplayedChanges().get(0).getUser().getName());
     }
 
     @Test
-    public void testFilterByDateRange() {
-        ReviewStockViewModel vm = new ReviewStockViewModel();
+    void testFilterByValidTimeRange() {
 
-        vm.startDateFilterProperty().set(LocalDateTime.of(2025, 1, 2, 0, 0).toLocalDate());
-        vm.applyFilters();
+        this.viewModel.startDateFilterProperty().set(LocalDate.now().minusDays(1));
+        this.viewModel.endDateFilterProperty().set(LocalDate.now());
 
-        assertEquals(1, vm.getDisplayedChanges().size());
-        assertEquals("Fuel Tank", vm.getDisplayedChanges().get(0).getStock().getName());
+        this.viewModel.applyFilters();
+
+        assertEquals(2, this.viewModel.getDisplayedChanges().size());
+        assertTrue(this.viewModel.getDisplayedChanges()
+            .stream()
+            .allMatch(sc -> sc.getTimestamp().toLocalDate().isAfter(LocalDate.now().minusDays(2))));
     }
 
     @Test
-    public void testFilterClearsCorrectly() {
-        ReviewStockViewModel vm = new ReviewStockViewModel();
+    void testFilterByInvalidTimeRange() {
+        this.viewModel.startDateFilterProperty().set(LocalDate.now());
+        this.viewModel.endDateFilterProperty().set(LocalDate.now().minusDays(1));
 
-        vm.specialFilterProperty().set(SpecialQualities.PERISHABLE);
-        vm.applyFilters();
+        assertThrows(IllegalArgumentException.class, () -> {
+            this.viewModel.applyFilters();
+        });
+    }
 
-        assertEquals(1, vm.getDisplayedChanges().size());
+    @Test
+    void testClearFilters() {
+        this.viewModel.specialFilterProperty().set(SpecialQualities.PERISHABLE);
+        this.viewModel.applyFilters();
+        assertEquals(2, this.viewModel.getDisplayedChanges().size());
 
-        vm.clearFilters();
-
-        assertEquals(2, vm.getDisplayedChanges().size());
+        this.viewModel.clearFilters();
+        assertEquals(3, this.viewModel.getDisplayedChanges().size());
     }
 }

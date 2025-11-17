@@ -164,4 +164,8 @@ public class InventoryService {
         );
         this.stockChanges.add(change);
     }
+    
+    public List<StockChange> getStockChangesInternal() {
+        return this.stockChanges;
+    }
 }

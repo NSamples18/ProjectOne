@@ -4,12 +4,13 @@ import java.util.List;
 
 import edu.westga.cs3211.AddStock.viewmodel.AddStockViewModel;
 import edu.westga.cs3211.LandingPage.view.LandingPageCodeBehind;
+import edu.westga.cs3211.ReviewStock.view.ReviewStockController;
 import edu.westga.cs3211.LandingPage.model.Compartment;
 import edu.westga.cs3211.LandingPage.model.Condition;
 import edu.westga.cs3211.LandingPage.model.SpecialQualities;
 import edu.westga.cs3211.LandingPage.model.Stock;
-import edu.westga.cs3211.ProjectOne.Main;
 import edu.westga.cs3211.User.model.User;
+import edu.westga.cs3211.User.model.UserRole;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -46,8 +47,12 @@ public class AddStockController {
 
     @FXML
     private Button submitButton;
+    
+    @FXML
+    private Button reviewButton;
 
     private AddStockViewModel viewModel;
+    
     private User currentUser;
 
     /**
@@ -66,7 +71,14 @@ public class AddStockController {
         this.conditionCombo.valueProperty().bindBidirectional(this.viewModel.conditionProperty());
         this.expirationDatePicker.valueProperty().bindBidirectional(this.viewModel.expirationProperty());
         this.submitButton.disableProperty().bind(this.viewModel.canSubmitProperty().not());
+        
+        this.checkUserRole(user);
     }
+
+	private void checkUserRole(User user) {
+		boolean isQuartermaster = user.getRole() == UserRole.Quartermaster;
+        this.reviewButton.setVisible(isQuartermaster);
+	}
 
     
     @FXML
@@ -133,10 +145,29 @@ public class AddStockController {
      */
     @FXML
     private void handleReviewStock() {
-        this.showAlert(Alert.AlertType.INFORMATION,
-            "Unavailable",
-            "The review stock page has not been implemented yet.");
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/edu/westga/cs3211/ProjectOne/view/ReviewStockPage.fxml")
+            );
+
+            Parent root = loader.load();
+
+            ReviewStockController controller = loader.getController();
+            controller.init(this.currentUser);
+
+            Stage stage = (Stage) this.nameField.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Review Stock Changes");
+            stage.show();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            this.showAlert(Alert.AlertType.ERROR,
+                "Navigation Error",
+                "Unable to open Review Stock page.");
+        }
     }
+
 
     /**
      * Handles logging out of the system.

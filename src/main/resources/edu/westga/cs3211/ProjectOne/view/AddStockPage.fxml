@@ -17,7 +17,7 @@
           AnchorPane.rightAnchor="10"
           alignment="CENTER_LEFT">
 
-        <Button fx:id="homeButton"
+        <Button
                 text="Home"
                 onAction="#handleHome"/>
 
@@ -28,7 +28,7 @@
 
         <Pane HBox.hgrow="ALWAYS"/>
 
-        <Button fx:id="logoutButton"
+        <Button
                 text="Log Out"
                 onAction="#handleLogout"/>
 

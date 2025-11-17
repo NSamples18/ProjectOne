@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -48,28 +49,34 @@ public class LoginPageController {
         );
     }
 
-    /**
-     * Handles login clicked.
-     */
     @FXML
     private void handleLogin() {
         try {
-            if (this.viewModel.login()) {
-                FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/edu/westga/cs3211/ProjectOne/view/LandingPage.fxml")
-                );
-
-                Parent root = loader.load();
-                LandingPageCodeBehind controller = loader.getController();
-                controller.init(this.viewModel.getLoggedInUser());
-
-                Stage stage = (Stage) this.loginButton.getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.setTitle("Landing Page");
-                stage.show();
+            if (!this.viewModel.login()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Login Failed");
+                alert.setHeaderText(null);
+                alert.setContentText("Invalid username or password.");
+                alert.showAndWait();
+                return;
             }
+
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/edu/westga/cs3211/ProjectOne/view/LandingPage.fxml")
+            );
+
+            Parent root = loader.load();
+            LandingPageCodeBehind controller = loader.getController();
+            controller.init(this.viewModel.getLoggedInUser());
+
+            Stage stage = (Stage) this.loginButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Landing Page");
+            stage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }
